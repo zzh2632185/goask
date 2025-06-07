@@ -59,7 +59,12 @@ jobs:
       run: npm install
       working-directory: frontend
 
-    - name: Build application
+    - name: Build application (Linux)
+      if: matrix.platform == 'ubuntu-latest'
+      run: wails build -clean -tags webkit2_41
+
+    - name: Build application (Other platforms)
+      if: matrix.platform != 'ubuntu-latest'
       run: wails build -clean
 
     - name: Prepare release artifacts (Linux)
