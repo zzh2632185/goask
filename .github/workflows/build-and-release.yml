@@ -2,134 +2,149 @@ name: Build and Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  GO_VERSION: '1.23'
+  NODE_VERSION: '18'
+  WAILS_VERSION: 'latest'
 
 jobs:
-  build-and-release:
+  build:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          # Windows builds
-          - platform: windows-latest
-            os: windows
-            arch: amd64
-            wails_platform: windows/amd64
-            artifact_name: goask-windows-amd64.exe
-          - platform: windows-latest
-            os: windows
-            arch: arm64
-            wails_platform: windows/arm64
-            artifact_name: goask-windows-arm64.exe
-          
-          # macOS builds
-          - platform: macos-latest
-            os: darwin
-            arch: amd64
-            wails_platform: darwin/amd64
-            artifact_name: goask-macos-amd64
-          - platform: macos-latest
-            os: darwin
-            arch: arm64
-            wails_platform: darwin/arm64
-            artifact_name: goask-macos-arm64
-          
-          # Linux builds
-          - platform: ubuntu-latest
-            os: linux
-            arch: amd64
-            wails_platform: linux/amd64
-            artifact_name: goask-linux-amd64
-          - platform: ubuntu-latest
-            os: linux
-            arch: arm64
-            wails_platform: linux/arm64
-            artifact_name: goask-linux-arm64
-    
-    runs-on: ${{ matrix.platform }}
-    
+        platform:
+          - name: 'windows-amd64'
+            os: 'windows-latest'
+            build-name: 'goask.exe'
+            build-path: 'build/bin/goask.exe'
+            asset-name: 'goask-windows-amd64.exe'
+          - name: 'linux-amd64'
+            os: 'ubuntu-latest'
+            build-name: 'goask'
+            build-path: 'build/bin/goask'
+            asset-name: 'goask-linux-amd64'
+          - name: 'darwin-amd64'
+            os: 'macos-latest'
+            build-name: 'goask'
+            build-path: 'build/bin/goask.app'
+            asset-name: 'goask-darwin-amd64.app'
+          - name: 'darwin-arm64'
+            os: 'macos-latest'
+            build-name: 'goask'
+            build-path: 'build/bin/goask.app'
+            asset-name: 'goask-darwin-arm64.app'
+
+    runs-on: ${{ matrix.platform.os }}
+
     steps:
-    - uses: actions/checkout@v4
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Setup Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.23'
-    
+        go-version: ${{ env.GO_VERSION }}
+        cache: true
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-    
+        cache-dependency-path: 'frontend/package-lock.json'
+
     - name: Install Linux dependencies
-      if: matrix.os == 'linux'
+      if: matrix.platform.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.0-dev libgio-unix-2.0-dev
-    
-    - name: Install Linux ARM64 cross-compilation tools
-      if: matrix.os == 'linux' && matrix.arch == 'arm64'
-      run: |
-        sudo apt-get install -y gcc-aarch64-linux-gnu
-        echo "CC=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
-        echo "CGO_ENABLED=1" >> $GITHUB_ENV
-        echo "GOOS=linux" >> $GITHUB_ENV
-        echo "GOARCH=arm64" >> $GITHUB_ENV
-    
+        sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+
     - name: Install Wails
-      run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
-    
+      run: go install github.com/wailsapp/wails/v2/cmd/wails@${{ env.WAILS_VERSION }}
+
     - name: Install frontend dependencies
       run: npm install
       working-directory: frontend
-    
-    - name: Build application
-      run: wails build -platform ${{ matrix.wails_platform }}
-    
+
+    - name: Build application (Windows/Linux)
+      if: matrix.platform.name != 'darwin-arm64'
+      run: wails build -platform ${{ matrix.platform.name }}
+
+    - name: Build application (macOS ARM64)
+      if: matrix.platform.name == 'darwin-arm64'
+      run: wails build -platform darwin/arm64
+
     - name: Prepare artifacts (Windows)
-      if: matrix.os == 'windows'
+      if: matrix.platform.os == 'windows-latest'
       run: |
-        mkdir -p release
-        cp build/bin/goask.exe release/${{ matrix.artifact_name }}
+        mkdir -p artifacts
+        cp "${{ matrix.platform.build-path }}" "artifacts/${{ matrix.platform.asset-name }}"
       shell: bash
-    
-    - name: Prepare artifacts (Unix)
-      if: matrix.os != 'windows'
+
+    - name: Prepare artifacts (Linux)
+      if: matrix.platform.os == 'ubuntu-latest'
       run: |
-        mkdir -p release
-        cp build/bin/goask release/${{ matrix.artifact_name }}
-        chmod +x release/${{ matrix.artifact_name }}
-    
+        mkdir -p artifacts
+        cp "${{ matrix.platform.build-path }}" "artifacts/${{ matrix.platform.asset-name }}"
+        chmod +x "artifacts/${{ matrix.platform.asset-name }}"
+
+    - name: Prepare artifacts (macOS)
+      if: matrix.platform.os == 'macos-latest'
+      run: |
+        mkdir -p artifacts
+        if [ "${{ matrix.platform.name }}" = "darwin-arm64" ]; then
+          cp -r "${{ matrix.platform.build-path }}" "artifacts/goask-darwin-arm64.app"
+        else
+          cp -r "${{ matrix.platform.build-path }}" "artifacts/${{ matrix.platform.asset-name }}"
+        fi
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.artifact_name }}
-        path: release/${{ matrix.artifact_name }}
-  
-  create-release:
-    needs: build-and-release
+        name: ${{ matrix.platform.name }}
+        path: artifacts/
+        retention-days: 30
+
+  release:
+    needs: build
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
         path: artifacts
-    
+
+    - name: Prepare release assets
+      run: |
+        # Zip macOS apps
+        cd artifacts/darwin-amd64
+        zip -r goask-darwin-amd64.zip goask-darwin-amd64.app
+        cd ../darwin-arm64
+        zip -r goask-darwin-arm64.zip goask-darwin-arm64.app
+        cd ..
+
     - name: Create Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v1
       with:
-        files: |
-          artifacts/goask-windows-amd64.exe/goask-windows-amd64.exe
-          artifacts/goask-windows-arm64.exe/goask-windows-arm64.exe
-          artifacts/goask-macos-amd64/goask-macos-amd64
-          artifacts/goask-macos-arm64/goask-macos-arm64
-          artifacts/goask-linux-amd64/goask-linux-amd64
-          artifacts/goask-linux-arm64/goask-linux-arm64
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
         draft: false
         prerelease: false
+        files: |
+          artifacts/windows-amd64/goask-windows-amd64.exe
+          artifacts/linux-amd64/goask-linux-amd64
+          artifacts/darwin-amd64/goask-darwin-amd64.zip
+          artifacts/darwin-arm64/goask-darwin-arm64.zip
         generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
