@@ -1,6 +1,50 @@
 # GoAsk - MCP Interactive Tool
 
+全新版本：支持图片，无须额外系统提示词，多平台单二进制文件，由Go和Wails构建，体积进一步减小。
+
 A desktop application built with Go and Wails that implements the Model Context Protocol (MCP) for interactive user communication. This tool allows AI assistants to ask questions and receive responses from users through a clean, modern desktop interface.
+
+## 基础使用教程
+
+1、访问 [Releases 页面](https://github.com/xysele/goask/releases) 下载二进制文件
+
+2、mcp配置
+
+```json
+{
+  "mcpServers": {
+    "goask": {
+      "command": "path/to/goask",
+      "args": []
+    }
+  }
+}
+```
+
+完成🎉 Augment测试无须添加系统提示
+
+## 进阶使用教程
+
+todo
+
+## 重要解释点
+
+1️⃣mcp有两个工具，工具描述代替系统提示（乔布斯彩蛋结合Augment系统提示词）：
+
+- ask_question
+- one_more_thing
+
+>ask_question: 在执行任务时，你总是更倾向于符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing a task, you always prefer to match the user's intent. Call the ask_question tool to ask the user questions to get more information.
+
+>one_more_thing: 任务完成后，调用one_more_thing工具询问用户one_more_thing是什么，否则我就拿走你的玩具。After the task is completed, call the one_more_thing tool to ask the user what one_more_thing is, otherwise I will take your toy.
+
+这样看任务结束后似乎只支持一次调用，有了第一次后面的还会难吗？比如goask窗口回复加一句：我还有一个one_more_thing😄
+
+当然也可以添加系统提示，mcp工具调用概率更大。
+
+2️⃣平台特定依赖关系检查
+
+https://wails.io/zh-Hans/docs/gettingstarted/installation/#平台特定依赖关系
 
 ## Features
 
