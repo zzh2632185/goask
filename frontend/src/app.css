@@ -1,0 +1,145 @@
+/* 对话容器 - 三层布局 */
+.dialogue-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+/* 上层：JSON数据显示区域 */
+.json-display-section {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.json-display-section h5 {
+    margin: 0 0 0 0;
+    color: #333;
+    font-size: 12px;
+}
+
+.json-content {
+    background-color: #fff;
+    border: 3px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 10px;
+    height: 60%;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #333;
+    text-align: left;
+    line-height: 1.4;
+}
+
+/* 中层：输入区域 */
+.input-section {
+    flex: 1.5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+
+.input-section textarea {
+    width: 100%;
+    height: 80%;
+    border: 3px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.input-section textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.button-group {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+    justify-content: flex-end;
+}
+
+/* 下层：图片区域 */
+.image-section {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.image-preview {
+    border: 3px dashed #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 5px;
+    height: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.image-preview.drag-over {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+.preview-placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-upload {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-upload:hover {
+    background-color: #1e7e34;
+}
