@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install Wails
+      run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+    - name: Install frontend dependencies
+      run: npm install
+      working-directory: frontend
+
+    - name: Build application (Linux)
+      if: matrix.platform == 'ubuntu-latest'
+      run: wails build
+
+    - name: Build application (Windows)
+      if: matrix.platform == 'windows-latest'
+      run: wails build
+
+    - name: Build application (macOS)
+      if: matrix.platform == 'macos-latest'
+      run: wails build
+
+    - name: Test Go modules
+      run: go test ./...
+
+    - name: Upload build artifacts (Linux)
+      if: matrix.platform == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: goask-linux
+        path: build/bin/goask
+
+    - name: Upload build artifacts (Windows)
+      if: matrix.platform == 'windows-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: goask-windows
+        path: build/bin/goask.exe
+
+    - name: Upload build artifacts (macOS)
+      if: matrix.platform == 'macos-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: goask-macos
+        path: build/bin/goask.app
