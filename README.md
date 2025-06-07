@@ -2,8 +2,6 @@
 
 全新版本：支持图片，无须额外系统提示词，多平台单二进制文件，由Go和Wails构建，体积进一步减小。
 
-A desktop application built with Go and Wails that implements the Model Context Protocol (MCP) for interactive user communication. This tool allows AI assistants to ask questions and receive responses from users through a clean, modern desktop interface.
-
 ## 基础使用教程
 
 1、访问 [Releases 页面](https://github.com/xysele/goask/releases) 下载二进制文件
@@ -21,7 +19,7 @@ A desktop application built with Go and Wails that implements the Model Context 
 }
 ```
 
-完成🎉 Augment测试无须添加系统提示
+完成🎉 Augment测试无须添加系统提示即可调用。
 
 ## 进阶使用教程
 
