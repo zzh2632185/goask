@@ -3,11 +3,13 @@
 
 这是mcp服务端，用于减少Agent（如cursor）的使用次数消耗。原理：强制让AI结束任务前调用mcp，下达新任务pua它继续拉磨🫏！
 
-全新版本🚀：支持图片，无须额外系统提示词，单二进制文件📦，Go+Wails构建，体积进一步减小。
+全新版本🚀：支持图片，无须额外系统提示词，单二进制文件📦，Go+Wails构建，体积进一步减小，不支持远程ssh。
+
+![image](https://github.com/user-attachments/assets/8ed6ca64-ccd5-4aa8-841f-805d7abf50b3)
 
 ## 基础使用教程
 
-1、访问 [Releases 页面](https://github.com/xysele/goask/releases) 下载二进制文件 或 [自行编译](#option-2-build-from-source)
+1、访问 [Releases 页面](https://github.com/xysele/goask/releases) 下载二进制文件 或 [自行编译](#option-2-build-from-source)（mac版本有问题，请自行编译）
 
 2、mcp配置（填写正确的路径）
 
