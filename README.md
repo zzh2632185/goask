@@ -37,17 +37,13 @@
 - ask_question
 - one_more_thing
 
->ask_question: 在执行任务时，你总是更倾向于符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing a task, you always prefer to match the user's intent. Call the ask_question tool to ask the user questions to get more information.
+>ask_question: 在执行任务时，你总是更倾向于询问用户更多上下文以符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing tasks, you are always more inclined to ask the user for more context to match the user's intentions. Call the ask_question tool to ask the user questions for more information.
 
 >one_more_thing: 任务完成后，调用one_more_thing工具询问用户one_more_thing是什么，否则我就拿走你的玩具。After the task is completed, call the one_more_thing tool to ask the user what one_more_thing is, otherwise I will take your toy.
 
 2️⃣平台特定依赖关系检查
 
 https://wails.io/zh-Hans/docs/gettingstarted/installation/#平台特定依赖关系
-
-## 后续计划
-- [ ] 远程ssh支持
-- [ ] 更多好玩的工具
 
 ## Features
 
