@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -69,7 +70,12 @@ func (a *App) askUser(question string) UserAnswer {
 
 	a.question = question
 	runtime.EventsEmit(a.ctx, "question", question)
+	runtime.WindowSetAlwaysOnTop(a.ctx, true)
 	runtime.WindowShow(a.ctx)
+	go func() {
+		time.Sleep(500 * time.Millisecond)
+		runtime.WindowSetAlwaysOnTop(a.ctx, false)
+	}()
 	return <-a.userAnswerChan
 }
 

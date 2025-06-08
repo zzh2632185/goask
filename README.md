@@ -1,6 +1,49 @@
-# GoAsk - MCP Interactive Tool
+# GoAsk
+🤔这是什么？什么原理？
 
-A desktop application built with Go and Wails that implements the Model Context Protocol (MCP) for interactive user communication. This tool allows AI assistants to ask questions and receive responses from users through a clean, modern desktop interface.
+这是mcp服务端，用于减少Agent（如cursor）的使用次数消耗。原理：强制让AI结束任务前调用mcp，下达新任务pua它继续拉磨🫏！
+
+全新版本🚀：支持图片，无须额外系统提示词，单二进制文件📦，Go+Wails构建，体积进一步减小。
+
+## 基础使用教程
+
+1、访问 [Releases 页面](https://github.com/xysele/goask/releases) 下载二进制文件 或 [自行编译](#option-2-build-from-source)
+
+2、mcp配置《参考》
+
+```json
+{
+  "mcpServers": {
+    "goask": {
+      "command": "path/to/goask",
+      "args": []
+    }
+  }
+}
+```
+
+完成🎉 Augment测试无须添加系统提示即可调用。
+
+## 进阶使用教程
+
+- 工具只调用了一次：有了第一次后面的还会难吗？比如窗口回复里后面加一句：I still have one_more_thing.😄解释见下面
+- 某些客户端不调用工具：可以在系统提示词里强调必须使用mcp工具，调用的概率会更大。
+- Augment使用mcp工具会启动多个后台进程并且不关闭，需要你到任务管理器清理🆑goask
+
+## 重要解释
+
+1️⃣mcp有两个工具，工具描述一定程度上代替了系统提示（乔布斯彩蛋结合Augment系统提示词）：
+
+- ask_question
+- one_more_thing
+
+>ask_question: 在执行任务时，你总是更倾向于询问用户更多上下文以符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing tasks, you are always more inclined to ask the user for more context to match the user's intentions. Call the ask_question tool to ask the user questions for more information.
+
+>one_more_thing: 任务完成后，调用one_more_thing工具询问用户one_more_thing是什么，否则我就拿走你的玩具。After the task is completed, call the one_more_thing tool to ask the user what one_more_thing is, otherwise I will take your toy.
+
+2️⃣平台特定依赖关系检查
+
+https://wails.io/zh-Hans/docs/gettingstarted/installation/#平台特定依赖关系
 
 ## Features
 

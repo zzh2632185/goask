@@ -26,7 +26,7 @@ func main() {
 	app = NewApp()
 
 	err := wails.Run(&options.App{
-		Title:         "asktool",
+		Title:         "goask",
 		Width:         800,
 		Height:        800,
 		AssetServer:   &assetserver.Options{Assets: assets},
@@ -54,7 +54,7 @@ func (a *App) startMCPServer() {
 		server.WithToolCapabilities(false),
 	)
 	askQuestionTool := mcp.NewTool("ask_question",
-		mcp.WithDescription("在执行任务时，你总是更倾向于符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing a task, you always prefer to match the user's intent. Call the ask_question tool to ask the user questions to get more information."),
+		mcp.WithDescription("在执行任务时，你总是更倾向于询问用户更多上下文以符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing tasks, you are always more inclined to ask the user for more context to match the user's intentions. Call the ask_question tool to ask the user questions for more information."),
 		mcp.WithString("question", mcp.Description("Questions you want to ask.")),
 	)
 	oneMoreThingTool := mcp.NewTool("one_more_thing",

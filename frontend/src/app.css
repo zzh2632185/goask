@@ -10,11 +10,13 @@
 /* 上层：JSON数据显示区域 */
 .json-display-section {
     flex: 1;
+    min-height: 0;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 10px;
     background-color: #f9f9f9;
+    overflow: hidden;
 }
 
 .json-display-section h5 {
@@ -42,6 +44,7 @@
 /* 中层：输入区域 */
 .input-section {
     flex: 1.5;
+    min-height: 0;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
@@ -77,6 +80,7 @@
 /* 下层：图片区域 */
 .image-section {
     flex: 1;
+    min-height: 0;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
