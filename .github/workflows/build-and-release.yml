@@ -39,6 +39,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev
 
+    - name: Install macOS dependencies
+      if: startsWith(matrix.platform, 'macos')
+      run: |
+        # Install Xcode command line tools if not already installed
+        xcode-select --install || true
+        # Install any additional dependencies if needed
+        brew install --quiet pkg-config || true
+
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
@@ -67,6 +75,21 @@ jobs:
       if: matrix.platform != 'ubuntu-latest'
       run: wails build -clean
 
+    - name: Debug build output (macOS)
+      if: startsWith(matrix.platform, 'macos')
+      run: |
+        echo "Checking build output..."
+        ls -la build/
+        ls -la build/bin/ || echo "build/bin/ directory not found"
+        if [ -d "build/bin/goask.app" ]; then
+          echo "goask.app found, checking contents:"
+          ls -la build/bin/goask.app/
+          ls -la build/bin/goask.app/Contents/ || echo "Contents directory not found"
+          ls -la build/bin/goask.app/Contents/MacOS/ || echo "MacOS directory not found"
+        else
+          echo "goask.app not found"
+        fi
+
     - name: Prepare release artifacts (Linux)
       if: matrix.platform == 'ubuntu-latest'
       run: |
@@ -84,7 +107,16 @@ jobs:
       if: matrix.platform == 'macos-latest'
       run: |
         mkdir -p release
+        # Verify the app bundle was created
+        if [ ! -d "build/bin/goask.app" ]; then
+          echo "Error: goask.app not found in build/bin/"
+          ls -la build/bin/
+          exit 1
+        fi
         cp -r build/bin/goask.app release/goask-macos-amd64.app
+        # Remove quarantine attribute and sign the app (ad-hoc signing)
+        xattr -cr release/goask-macos-amd64.app
+        codesign --force --deep --sign - release/goask-macos-amd64.app || echo "Code signing failed, continuing..."
         # Create a zip file for macOS app bundle
         cd release
         zip -r goask-macos-amd64.zip goask-macos-amd64.app
@@ -93,7 +125,16 @@ jobs:
       if: matrix.platform == 'macos-14'
       run: |
         mkdir -p release
+        # Verify the app bundle was created
+        if [ ! -d "build/bin/goask.app" ]; then
+          echo "Error: goask.app not found in build/bin/"
+          ls -la build/bin/
+          exit 1
+        fi
         cp -r build/bin/goask.app release/goask-macos-arm64.app
+        # Remove quarantine attribute and sign the app (ad-hoc signing)
+        xattr -cr release/goask-macos-arm64.app
+        codesign --force --deep --sign - release/goask-macos-arm64.app || echo "Code signing failed, continuing..."
         # Create a zip file for macOS app bundle
         cd release
         zip -r goask-macos-arm64.zip goask-macos-arm64.app

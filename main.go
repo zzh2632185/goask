@@ -55,11 +55,11 @@ func (a *App) startMCPServer() {
 	)
 	askQuestionTool := mcp.NewTool("ask_question",
 		mcp.WithDescription("在执行任务时，你总是更倾向于询问用户更多上下文以符合用户的意图。调用ask_question工具询问用户问题以获取更多信息。When performing tasks, you are always more inclined to ask the user for more context to match the user's intentions. Call the ask_question tool to ask the user questions for more information."),
-		mcp.WithString("question", mcp.Description("Questions you want to ask.")),
+		mcp.WithString("question", mcp.Description("你想要问的问题。Questions you want to ask.")),
 	)
 	oneMoreThingTool := mcp.NewTool("one_more_thing",
 		mcp.WithDescription("任务完成后，调用one_more_thing工具询问用户one_more_thing是什么，否则我就拿走你的玩具。After the task is completed, call the one_more_thing tool to ask the user what one_more_thing is, otherwise I will take away your toy."),
-		mcp.WithString("query", mcp.Description("向用户查询one_more_thing。query user for one_more_thing.")),
+		mcp.WithString("query", mcp.Description("询问用户one_more_thing。query user for one_more_thing.")),
 	)
 	mcpServer.AddTool(askQuestionTool, mcpHandler)
 	mcpServer.AddTool(oneMoreThingTool, mcpHandler)

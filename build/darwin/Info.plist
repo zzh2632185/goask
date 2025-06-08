@@ -59,5 +59,18 @@
           {{end}}
         </array>
         {{end}}
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsLocalNetworking</key>
+            <true/>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+        </dict>
+        <key>LSUIElement</key>
+        <false/>
+        <key>NSSupportsAutomaticGraphicsSwitching</key>
+        <true/>
+        <key>LSApplicationCategoryType</key>
+        <string>public.app-category.developer-tools</string>
     </dict>
 </plist>

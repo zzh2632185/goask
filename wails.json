@@ -8,5 +8,11 @@
   "frontend:dev:serverUrl": "auto",
   "author": {
     "name": "xysele"
+  },
+  "info": {
+    "productName": "GoAsk",
+    "productVersion": "1.0.0",
+    "copyright": "© 2024 xysele",
+    "comments": "A cross-platform MCP server for interactive user input"
   }
 }
