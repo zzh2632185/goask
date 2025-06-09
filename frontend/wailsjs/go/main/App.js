@@ -6,6 +6,10 @@ export function GetQuestion() {
   return window['go']['main']['App']['GetQuestion']();
 }
 
+export function ProcessImage(arg1) {
+  return window['go']['main']['App']['ProcessImage'](arg1);
+}
+
 export function UserCancelAnswer() {
   return window['go']['main']['App']['UserCancelAnswer']();
 }

@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function GetQuestion():Promise<string>;
 
+export function ProcessImage(arg1:string):Promise<main.ImageProcessResult>;
+
 export function UserCancelAnswer():Promise<void>;
 
 export function UserSubmitAnswer(arg1:main.UserAnswer):Promise<void>;

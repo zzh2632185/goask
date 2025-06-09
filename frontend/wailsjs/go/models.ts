@@ -1,5 +1,19 @@
 export namespace main {
 	
+	export class ImageProcessResult {
+	    compressedData: string;
+	    mimeType: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImageProcessResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.compressedData = source["compressedData"];
+	        this.mimeType = source["mimeType"];
+	    }
+	}
 	export class UserAnswer {
 	    continue: boolean;
 	    text?: string;

@@ -1,11 +1,23 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
+	"fmt"
+	"image"
+	_ "image/png" // 支持PNG格式
 	"sync"
 	"time"
 
+	"github.com/chai2010/webp"
+	"github.com/nfnt/resize"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+
+	// 支持更多图片格式
+	_ "golang.org/x/image/bmp"  // 支持BMP格式
+	_ "golang.org/x/image/tiff" // 支持TIFF格式
+	_ "golang.org/x/image/webp" // 支持WebP格式
 )
 
 // App struct
@@ -24,6 +36,12 @@ type UserAnswer struct {
 	Text     string `json:"text,omitempty"`
 	Image    string `json:"image,omitempty"`
 	MimeType string `json:"mimeType,omitempty"`
+}
+
+// ImageProcessResult 图片处理结果
+type ImageProcessResult struct {
+	CompressedData string `json:"compressedData"`
+	MimeType       string `json:"mimeType"`
 }
 
 // NewApp creates a new App application struct
@@ -102,4 +120,67 @@ func (a *App) UserCancelAnswer() {
 		runtime.WindowHide(a.ctx)
 		a.userAnswerChan <- UserAnswer{Continue: false}
 	}
+}
+
+// ProcessImage 处理图片压缩
+func (a *App) ProcessImage(imageData string) (*ImageProcessResult, error) {
+	// 解码base64图片数据
+	data, err := base64.StdEncoding.DecodeString(imageData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode base64: %v", err)
+	}
+
+	// 检测图片格式并解码
+	img, _, err := image.Decode(bytes.NewReader(data))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode image: %v", err)
+	}
+
+	// 获取原始尺寸
+	bounds := img.Bounds()
+	width := bounds.Dx()
+	height := bounds.Dy()
+
+	// 设置最大尺寸（更保守的尺寸以减小文件大小）
+	const maxWidth = 800
+	const maxHeight = 800
+
+	// 计算新尺寸
+	newWidth := width
+	newHeight := height
+
+	if width > height {
+		if width > maxWidth {
+			newHeight = height * maxWidth / width
+			newWidth = maxWidth
+		}
+	} else {
+		if height > maxHeight {
+			newWidth = width * maxHeight / height
+			newHeight = maxHeight
+		}
+	}
+
+	// 调整图片尺寸
+	var resizedImg image.Image
+	if newWidth != width || newHeight != height {
+		resizedImg = resize.Resize(uint(newWidth), uint(newHeight), img, resize.Lanczos3)
+	} else {
+		resizedImg = img
+	}
+
+	// 压缩为WebP格式（更高的压缩率）
+	var buf bytes.Buffer
+	err = webp.Encode(&buf, resizedImg, &webp.Options{Quality: 70}) // 使用WebP格式，质量70
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode WebP: %v", err)
+	}
+
+	// 转换为base64
+	compressedData := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	return &ImageProcessResult{
+		CompressedData: compressedData,
+		MimeType:       "image/webp",
+	}, nil
 }
