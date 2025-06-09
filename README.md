@@ -11,21 +11,25 @@
 
 1、访问 [Releases 页面](https://github.com/xysele/goask/releases) 下载二进制文件 或 [自行编译](#option-2-build-from-source)（mac版本有问题，请自行编译）
 
-2、mcp配置（填写正确的路径）
+2、mcp配置（填写正确的路径，无须参数）
 
 ```json
 {
   "mcpServers": {
     "goask": {
-      "command": "path/to/goask",
+      "command": "path/to/goask这里填写文件路径",
       "args": []
     }
   }
 }
 ```
 
-3、完成🎉 Augment测试无须添加系统提示即可调用。
+3、完成🎉 Augment测试无须添加系统提示即可调用，也可额外添加系统提示词，自由发挥
 ***窗口会在收到mcp调用时打开，直接双击是不显示窗口的***
+手动弹窗测试：在文件路径打开终端，输入下面命令，注意文件名
+```
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"ask_question","arguments":{"question":"测试"}}}' | ./goask-windows-amd64.exe
+```
 
 ## 进阶使用教程
 
