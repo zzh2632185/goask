@@ -52,6 +52,11 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"ask_questi
 
 https://wails.io/zh-Hans/docs/gettingstarted/installation/#平台特定依赖关系
 
+## 我的使用体验
+分享下我的使用体验，在未添加系统提示词的情况下，Augment主动调用两次ask_question，可能上下文太长了，还没到最后的one_more_thing就强行断了😭：
+![image](https://github.com/user-attachments/assets/322818c8-5dd3-4cde-9ecd-06c1fb721947)
+![image](https://github.com/user-attachments/assets/ef93aef1-8589-40fb-a972-c9028ce071cf)
+
 ## Features
 
 - 🤖 **MCP Server Integration** - Implements Model Context Protocol for AI assistant communication
