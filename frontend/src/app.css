@@ -1,22 +1,64 @@
-/* 对话容器 - 三层布局 */
+/* 对话容器 - 可拖拽调整大小的三层布局 */
 .dialogue-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     padding: 15px;
     box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* 可调整大小的面板基础样式 */
+.resizable-panel {
+    min-height: 100px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* 拖拽分隔条样式 */
+.resize-handle {
+    height: 8px;
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0, #f0f0f0);
+    border: 1px solid #d0d0d0;
+    border-left: none;
+    border-right: none;
+    cursor: row-resize;
+    position: relative;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.resize-handle:hover {
+    background: linear-gradient(to bottom, #e0e0e0, #d0d0d0, #e0e0e0);
+}
+
+.resize-handle:active {
+    background: linear-gradient(to bottom, #d0d0d0, #c0c0c0, #d0d0d0);
+}
+
+/* 在拖拽条中间添加一个小的拖拽指示器 */
+.resize-handle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 3px;
+    background: #999;
+    border-radius: 2px;
 }
 
 /* 上层：JSON数据显示区域 */
 .json-display-section {
-    flex: 1;
-    min-height: 0;
+    height: 200px; /* 初始高度 */
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
-    margin-bottom: 10px;
     background-color: #f9f9f9;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .json-display-section h5 {
@@ -30,7 +72,7 @@
     border: 3px solid #e0e0e0;
     border-radius: 4px;
     padding: 10px;
-    height: 60%;
+    flex: 1;
     overflow-y: auto;
     font-family: 'Courier New', monospace;
     font-size: 12px;
@@ -43,23 +85,23 @@
 
 /* 中层：输入区域 */
 .input-section {
-    flex: 1.5;
-    min-height: 0;
+    height: 300px; /* 初始高度 */
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
-    margin-bottom: 10px;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
 .input-section textarea {
     width: 100%;
-    height: 80%;
+    flex: 1;
     border: 3px solid #ccc;
     border-radius: 4px;
     padding: 10px;
     font-size: 14px;
-    resize: vertical;
+    resize: none; /* 禁用内置调整大小，使用我们的拖拽功能 */
     box-sizing: border-box;
     font-family: inherit;
 }
@@ -72,19 +114,94 @@
 
 .button-group {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     margin-top: 5px;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prefix-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+}
+
+.prefix-checkbox {
+    margin: 0;
+    cursor: pointer;
+}
+
+.prefix-label {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.prefix-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.prefix-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.prefix-input:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-clear-prefix {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-clear-prefix:hover {
+    background: #c82333;
+}
+
+.btn-clear-prefix:active {
+    background: #bd2130;
 }
 
 /* 下层：图片区域 */
 .image-section {
-    flex: 1;
-    min-height: 0;
+    height: 250px; /* 初始高度 */
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
 .image-preview {
@@ -93,8 +210,7 @@
     padding: 10px;
     text-align: center;
     margin-bottom: 5px;
-    height: 60%;
-    min-height: 0;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;

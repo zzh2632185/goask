@@ -6,11 +6,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"image"
+	"image/jpeg"
 	_ "image/png" // 支持PNG格式
 	"sync"
 	"time"
 
-	"github.com/chai2010/webp"
 	"github.com/nfnt/resize"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -169,11 +169,11 @@ func (a *App) ProcessImage(imageData string) (*ImageProcessResult, error) {
 		resizedImg = img
 	}
 
-	// 压缩为WebP格式（更高的压缩率）
+	// 压缩为JPEG格式（高压缩率，广泛支持）
 	var buf bytes.Buffer
-	err = webp.Encode(&buf, resizedImg, &webp.Options{Quality: 70}) // 使用WebP格式，质量70
+	err = jpeg.Encode(&buf, resizedImg, &jpeg.Options{Quality: 70}) // 使用JPEG格式，质量70
 	if err != nil {
-		return nil, fmt.Errorf("failed to encode WebP: %v", err)
+		return nil, fmt.Errorf("failed to encode JPEG: %v", err)
 	}
 
 	// 转换为base64
@@ -181,6 +181,6 @@ func (a *App) ProcessImage(imageData string) (*ImageProcessResult, error) {
 
 	return &ImageProcessResult{
 		CompressedData: compressedData,
-		MimeType:       "image/webp",
+		MimeType:       "image/jpeg",
 	}, nil
 }
